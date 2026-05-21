@@ -90,8 +90,8 @@ function UsersTab() {
         loading={isLoading}
         onEdit={(user) => { setEditUser(user); setEditMode('edit') }}
         onResetPassword={(user) => { setEditUser(user); setEditMode('reset-password') }}
-        onForce2fa={(user) => force2faMutation.mutate(user.id)}
-        onToggleActive={(user) => toggleActiveMutation.mutate({ id: user.id, is_active: !user.is_active })}
+        onForce2fa={(user) => force2faMutation.mutate(String(user.id))}
+        onToggleActive={(user) => toggleActiveMutation.mutate({ id: String(user.id), is_active: !user.is_active })}
         onDelete={setDeletingUser}
       />
 
@@ -114,7 +114,7 @@ function UsersTab() {
       <ConfirmModal
         isOpen={!!deletingUser}
         onClose={() => setDeletingUser(null)}
-        onConfirm={() => deletingUser && deleteMutation.mutate(deletingUser.id)}
+        onConfirm={() => deletingUser && deleteMutation.mutate(String(deletingUser.id))}
         title="Delete user"
         message={`Permanently delete "${deletingUser?.username}" (${deletingUser?.email})? This cannot be undone.`}
         confirmLabel="Delete user"

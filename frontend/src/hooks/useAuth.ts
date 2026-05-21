@@ -7,7 +7,7 @@ import { tokenStore } from '@/api/client'
 import type { LoginCredentials } from '@/types'
 
 export function useAuth() {
-  const { user, isAuthenticated, isLoading, pendingTwoFactor, setUser, clearUser, setPendingTwoFactor, setLoading } = useAuthStore()
+  const { user, isAuthenticated, isLoading, pendingTwoFactor, setUser, clearUser, setLoading } = useAuthStore()
   const navigate = useNavigate()
 
   const login = useCallback(

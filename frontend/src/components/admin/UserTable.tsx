@@ -134,7 +134,7 @@ export function UserTable({
     <Table
       columns={columns}
       data={users}
-      keyExtractor={(u) => u.id}
+      keyExtractor={(u) => String(u.id)}
       loading={loading}
       emptyMessage="No users found."
     />
