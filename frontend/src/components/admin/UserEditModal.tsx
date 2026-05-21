@@ -12,9 +12,9 @@ import type { User } from '@/types'
 
 const editSchema = z.object({
   username: z.string().min(1, 'Name is required').max(100),
-  role: z.enum(['admin', 'user', 'viewer']),
+  role: z.enum(['super_admin', 'admin', 'editor', 'viewer']),
   is_active: z.boolean(),
-  permission_profile_id: z.string().nullable().optional(),
+  permission_profile_id: z.number().nullable().optional(),
 })
 
 const resetPasswordSchema = z.object({
@@ -60,7 +60,7 @@ export function UserEditModal({ user, mode, onClose }: UserEditModalProps) {
   })
 
   const updateMutation = useMutation({
-    mutationFn: (values: EditValues) => usersApi.update(user!.id, values),
+    mutationFn: (values: EditValues) => usersApi.update(String(user!.id), values),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] })
       toast.success('User updated successfully')
@@ -71,7 +71,7 @@ export function UserEditModal({ user, mode, onClose }: UserEditModalProps) {
 
   const resetPasswordMutation = useMutation({
     mutationFn: (values: ResetPasswordValues) =>
-      usersApi.resetPassword(user!.id, { new_password: values.new_password }),
+      usersApi.resetPassword(String(user!.id), { new_password: values.new_password }),
     onSuccess: () => {
       toast.success('Password reset successfully')
       onClose()
@@ -164,8 +164,9 @@ export function UserEditModal({ user, mode, onClose }: UserEditModalProps) {
             {...editForm.register('role')}
           >
             <option value="viewer">Viewer</option>
-            <option value="user">User</option>
+            <option value="editor">Editor</option>
             <option value="admin">Admin</option>
+            <option value="super_admin">Super Admin</option>
           </select>
         </div>
 

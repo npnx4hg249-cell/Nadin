@@ -42,7 +42,7 @@ class Settings(BaseSettings):
     CORS_ALLOW_CREDENTIALS: bool = True
 
     # Admin seed
-    ADMIN_EMAIL: str = "admin@nadin.local"
+    ADMIN_EMAIL: str = "admin@nadin.app"
     ADMIN_PASSWORD: str = "ChangeMe!1234"
     ADMIN_USERNAME: str = "superadmin"
 
