@@ -1,8 +1,7 @@
-import { MoreVertical, Play, Edit2, Trash2, BarChart2, Table2, LayoutDashboard, Code } from 'lucide-react'
+import { MoreVertical, Play, Edit2, Trash2, BarChart2, Table2, LayoutDashboard, Code, type LucideIcon } from 'lucide-react'
 import { useState } from 'react'
 import { Badge } from '@/components/ui/Badge'
 import { formatRelativeTime } from '@/lib/utils'
-import { cn } from '@/lib/utils'
 import type { Report, ReportStatus, ReportType, BadgeVariant } from '@/types'
 
 interface ReportCardProps {
@@ -19,7 +18,7 @@ const statusVariant: Record<ReportStatus, BadgeVariant> = {
   archived: 'default',
 }
 
-const typeIcons: Record<ReportType, React.FC<{ size?: number }>> = {
+const typeIcons: Record<ReportType, LucideIcon> = {
   chart: BarChart2,
   table: Table2,
   mixed: LayoutDashboard,
@@ -64,7 +63,7 @@ export function ReportCard({ report, onRun, onEdit, onDelete, onView }: ReportCa
                 className="fixed inset-0 z-10"
                 onClick={() => setMenuOpen(false)}
               />
-              <div className="absolute right-0 top-8 z-20 w-40 bg-gray-750 border border-gray-600 rounded-lg shadow-xl overflow-hidden animate-slide-in">
+              <div className="absolute right-0 top-8 z-20 w-40 bg-gray-800 border border-gray-600 rounded-lg shadow-xl overflow-hidden animate-slide-in">
                 <button
                   onClick={() => { onRun(report); setMenuOpen(false) }}
                   className="flex items-center gap-2 w-full px-3 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"

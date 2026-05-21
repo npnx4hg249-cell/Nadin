@@ -1,6 +1,5 @@
-import { Shield, ShieldOff, Lock, UserCheck, UserX, Trash2, Edit2 } from 'lucide-react'
+import { Shield, Lock, UserCheck, UserX, Trash2, Edit2 } from 'lucide-react'
 import { Badge } from '@/components/ui/Badge'
-import { Button } from '@/components/ui/Button'
 import { Table } from '@/components/ui/Table'
 import { formatDateTime } from '@/lib/utils'
 import type { User } from '@/types'

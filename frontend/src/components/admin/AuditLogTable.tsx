@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
-import { Filter, Search } from 'lucide-react'
+import { Search } from 'lucide-react'
 import { adminApi } from '@/api/admin'
 import { Table, Pagination } from '@/components/ui/Table'
 import { Badge } from '@/components/ui/Badge'

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Users, Shield, Activity, Plug, Plus, Search, Trash2, Settings, CheckCircle, XCircle } from 'lucide-react'
+import { Users, Shield, Activity, Plug, Plus, Search, Trash2, Settings, CheckCircle, XCircle, type LucideIcon } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { usersApi } from '@/api/users'
 import { adminApi } from '@/api/admin'
@@ -11,7 +11,7 @@ import { PermissionProfileForm } from '@/components/admin/PermissionProfileForm'
 import { AuditLogTable } from '@/components/admin/AuditLogTable'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
-import { Card, CardHeader } from '@/components/ui/Card'
+import { Card } from '@/components/ui/Card'
 import { Badge } from '@/components/ui/Badge'
 import { Pagination } from '@/components/ui/Table'
 import { ConfirmModal } from '@/components/ui/Modal'
@@ -20,7 +20,7 @@ import type { User, PermissionProfile, Plugin } from '@/types'
 
 type Tab = 'users' | 'profiles' | 'audit' | 'plugins'
 
-const TABS: { id: Tab; label: string; icon: React.FC<{ size?: number }> }[] = [
+const TABS: { id: Tab; label: string; icon: LucideIcon }[] = [
   { id: 'users', label: 'Users', icon: Users },
   { id: 'profiles', label: 'Permission Profiles', icon: Shield },
   { id: 'audit', label: 'Audit Log', icon: Activity },

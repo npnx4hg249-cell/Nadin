@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { Bell, Sun, Moon, LogOut, User, ChevronDown } from 'lucide-react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useTheme } from '@/hooks/useTheme'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthStore } from '@/store/authStore'

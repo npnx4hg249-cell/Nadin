@@ -19,7 +19,7 @@ import { Input } from '@/components/ui/Input'
 import { Modal, ConfirmModal } from '@/components/ui/Modal'
 import { Badge } from '@/components/ui/Badge'
 import { PageSpinner } from '@/components/ui/Spinner'
-import { Card, CardHeader } from '@/components/ui/Card'
+import { Card } from '@/components/ui/Card'
 import { formatDateTime } from '@/lib/utils'
 import type { Report, ReportRunResult } from '@/types'
 
