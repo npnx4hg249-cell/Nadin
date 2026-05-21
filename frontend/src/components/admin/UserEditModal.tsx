@@ -11,7 +11,7 @@ import { Modal } from '@/components/ui/Modal'
 import type { User } from '@/types'
 
 const editSchema = z.object({
-  full_name: z.string().min(1, 'Name is required').max(100),
+  username: z.string().min(1, 'Name is required').max(100),
   role: z.enum(['admin', 'user', 'viewer']),
   is_active: z.boolean(),
   permission_profile_id: z.string().nullable().optional(),
@@ -47,7 +47,7 @@ export function UserEditModal({ user, mode, onClose }: UserEditModalProps) {
     resolver: zodResolver(editSchema),
     values: user
       ? {
-          full_name: user.full_name,
+          username: user.username,
           role: user.role,
           is_active: user.is_active,
           permission_profile_id: user.permission_profile_id,
@@ -87,7 +87,7 @@ export function UserEditModal({ user, mode, onClose }: UserEditModalProps) {
         isOpen={true}
         onClose={onClose}
         title="Reset Password"
-        description={`Set a new password for ${user.full_name}`}
+        description={`Set a new password for ${user.username}`}
         footer={
           <>
             <Button variant="outline" onClick={onClose} disabled={resetPasswordMutation.isPending}>
@@ -127,7 +127,7 @@ export function UserEditModal({ user, mode, onClose }: UserEditModalProps) {
       isOpen={true}
       onClose={onClose}
       title="Edit User"
-      description={`Modify settings for ${user.full_name}`}
+      description={`Modify settings for ${user.username}`}
       footer={
         <>
           <Button variant="outline" onClick={onClose} disabled={updateMutation.isPending}>
@@ -151,8 +151,8 @@ export function UserEditModal({ user, mode, onClose }: UserEditModalProps) {
         <Input
           label="Full name"
           required
-          error={editForm.formState.errors.full_name?.message}
-          {...editForm.register('full_name')}
+          error={editForm.formState.errors.username?.message}
+          {...editForm.register('username')}
         />
 
         <div>

@@ -1,13 +1,15 @@
 // ─── Auth ────────────────────────────────────────────────────────────────────
 
 export interface User {
-  id: string
+  id: number
   email: string
-  full_name: string
-  role: 'admin' | 'user' | 'viewer'
+  username: string
+  role: 'super_admin' | 'admin' | 'editor' | 'viewer'
   is_active: boolean
-  is_2fa_enabled: boolean
-  permission_profile_id: string | null
+  is_verified: boolean
+  totp_enabled: boolean
+  force_totp: boolean
+  permission_profile_id: number | null
   created_at: string
   updated_at: string
   last_login: string | null
@@ -21,8 +23,7 @@ export interface LoginCredentials {
 export interface LoginResponse {
   access_token: string
   token_type: 'bearer'
-  requires_2fa: boolean
-  user: User
+  expires_in: number
 }
 
 export interface TwoFactorVerifyRequest {
@@ -115,11 +116,11 @@ export interface PluginConfigPayload {
 // ─── Admin — Users ────────────────────────────────────────────────────────────
 
 export interface AdminUserUpdatePayload {
-  full_name?: string
+  username?: string
   role?: User['role']
   is_active?: boolean
-  permission_profile_id?: string | null
-  force_2fa?: boolean
+  permission_profile_id?: number | null
+  force_totp?: boolean
 }
 
 export interface PasswordResetPayload {
@@ -239,7 +240,7 @@ export interface ChangePasswordPayload {
 }
 
 export interface UpdateProfilePayload {
-  full_name?: string
+  username?: string
   email?: string
 }
 

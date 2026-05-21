@@ -16,7 +16,7 @@ import { Modal } from '@/components/ui/Modal'
 import { formatDateTime } from '@/lib/utils'
 
 const profileSchema = z.object({
-  full_name: z.string().min(1, 'Name is required').max(100),
+  username: z.string().min(1, 'Name is required').max(100),
   email: z.string().email('Invalid email'),
 })
 
@@ -54,7 +54,7 @@ export function ProfilePage() {
   const profileForm = useForm<ProfileValues>({
     resolver: zodResolver(profileSchema),
     values: {
-      full_name: user?.full_name ?? '',
+      username: user?.username ?? '',
       email: user?.email ?? '',
     },
   })
@@ -93,7 +93,7 @@ export function ProfilePage() {
   const disable2faMutation = useMutation({
     mutationFn: (code: string) => authApi.disable2fa(code),
     onSuccess: () => {
-      updateUser({ is_2fa_enabled: false })
+      updateUser({ totp_enabled: false })
       toast.success('Two-factor authentication disabled')
       setDisable2faOpen(false)
       disable2faForm.reset()
@@ -118,10 +118,10 @@ export function ProfilePage() {
 
         <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-700">
           <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xl font-bold">
-            {user?.full_name.slice(0, 2).toUpperCase()}
+            {user?.username.slice(0, 2).toUpperCase()}
           </div>
           <div>
-            <p className="font-semibold text-white">{user?.full_name}</p>
+            <p className="font-semibold text-white">{user?.username}</p>
             <p className="text-sm text-gray-400">{user?.email}</p>
             <div className="flex items-center gap-2 mt-2">
               <Badge variant={user?.role === 'admin' ? 'info' : 'default'} className="capitalize">
@@ -130,7 +130,7 @@ export function ProfilePage() {
               <Badge variant={user?.is_active ? 'success' : 'error'} dot>
                 {user?.is_active ? 'Active' : 'Inactive'}
               </Badge>
-              {user?.is_2fa_enabled && <Badge variant="success">2FA enabled</Badge>}
+              {user?.totp_enabled && <Badge variant="success">2FA enabled</Badge>}
             </div>
           </div>
         </div>
@@ -153,9 +153,9 @@ export function ProfilePage() {
           <Input
             label="Full name"
             required
-            error={profileForm.formState.errors.full_name?.message}
+            error={profileForm.formState.errors.username?.message}
             leftIcon={<User size={16} />}
-            {...profileForm.register('full_name')}
+            {...profileForm.register('username')}
           />
           <Input
             label="Email address"
@@ -280,7 +280,7 @@ export function ProfilePage() {
           actions={<Shield size={16} className="text-gray-500" />}
         />
 
-        {user?.is_2fa_enabled ? (
+        {user?.totp_enabled ? (
           <div className="space-y-4">
             <div className="flex items-center gap-3 p-3 rounded-lg bg-emerald-900/20 border border-emerald-800/50">
               <CheckCircle size={18} className="text-emerald-400 shrink-0" />

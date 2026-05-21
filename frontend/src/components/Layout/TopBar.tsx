@@ -63,10 +63,10 @@ export function TopBar({ title }: TopBarProps) {
             className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-gray-800 transition-colors"
           >
             <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-semibold shrink-0">
-              {user?.full_name.slice(0, 2).toUpperCase() ?? '??'}
+              {user?.username.slice(0, 2).toUpperCase() ?? '??'}
             </div>
             <div className="hidden sm:block text-left">
-              <p className="text-sm font-medium text-white leading-none">{user?.full_name}</p>
+              <p className="text-sm font-medium text-white leading-none">{user?.username}</p>
               <p className="text-xs text-gray-400 mt-0.5 capitalize">{user?.role}</p>
             </div>
             <ChevronDown
@@ -81,7 +81,7 @@ export function TopBar({ title }: TopBarProps) {
           {userMenuOpen && (
             <div className="absolute right-0 top-12 w-52 bg-gray-800 border border-gray-700 rounded-xl shadow-2xl overflow-hidden z-50 animate-slide-in">
               <div className="px-4 py-3 border-b border-gray-700">
-                <p className="text-sm font-medium text-white truncate">{user?.full_name}</p>
+                <p className="text-sm font-medium text-white truncate">{user?.username}</p>
                 <p className="text-xs text-gray-400 truncate">{user?.email}</p>
               </div>
               <div className="p-1.5">

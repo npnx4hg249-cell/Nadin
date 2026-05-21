@@ -13,9 +13,7 @@ from app.core.security import generate_totp_qr_bytes
 from app.modules.auth import service as auth_service
 from app.modules.auth.schemas import (
     LoginRequest,
-    LogoutRequest,
     MessageResponse,
-    RefreshRequest,
     TOTPDisableRequest,
     TOTPSetupResponse,
     TOTPVerifyRequest,
@@ -33,6 +31,18 @@ def _get_client_ip(request: Request) -> Optional[str]:
     return request.client.host if request.client else None
 
 
+def _set_refresh_cookie(response: Response, token: str) -> None:
+    response.set_cookie(
+        key="refresh_token",
+        value=token,
+        httponly=True,
+        secure=settings.APP_ENV == "production",
+        samesite="lax",
+        max_age=settings.REFRESH_TOKEN_EXPIRE_DAYS * 86400,
+        path="/api/v1/auth",
+    )
+
+
 @router.post(
     "/login",
     response_model=TokenResponse,
@@ -40,14 +50,10 @@ def _get_client_ip(request: Request) -> Optional[str]:
 )
 async def login(
     request: Request,
+    response: Response,
     body: LoginRequest,
     db: AsyncSession = Depends(get_db),
 ):
-    """
-    Authenticate with username (or email) and password.
-    If 2FA is enabled, also supply `totp_code`.
-    Returns JWT access + refresh token pair.
-    """
     ip = _get_client_ip(request)
     access_token, refresh_token = await auth_service.authenticate_user(
         db=db,
@@ -56,9 +62,9 @@ async def login(
         totp_code=body.totp_code,
         ip_address=ip,
     )
+    _set_refresh_cookie(response, refresh_token)
     return TokenResponse(
         access_token=access_token,
-        refresh_token=refresh_token,
         expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
 
@@ -69,14 +75,17 @@ async def login(
     summary="Rotate refresh token",
 )
 async def refresh_token(
-    body: RefreshRequest,
+    request: Request,
+    response: Response,
     db: AsyncSession = Depends(get_db),
 ):
-    """Exchange a valid refresh token for a new access + refresh token pair (rotation)."""
-    new_access, new_refresh = await auth_service.refresh_access_token(db, body.refresh_token)
+    raw_token = request.cookies.get("refresh_token")
+    if not raw_token:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="No refresh token")
+    new_access, new_refresh = await auth_service.refresh_access_token(db, raw_token)
+    _set_refresh_cookie(response, new_refresh)
     return TokenResponse(
         access_token=new_access,
-        refresh_token=new_refresh,
         expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
     )
 
@@ -87,12 +96,15 @@ async def refresh_token(
     summary="Logout (revoke refresh token)",
 )
 async def logout(
-    body: LogoutRequest,
+    request: Request,
+    response: Response,
     db: AsyncSession = Depends(get_db),
     current_user=Depends(get_current_user),
 ):
-    """Revoke the supplied refresh token."""
-    await auth_service.logout_user(db, body.refresh_token)
+    raw_token = request.cookies.get("refresh_token")
+    if raw_token:
+        await auth_service.logout_user(db, raw_token)
+    response.delete_cookie(key="refresh_token", path="/api/v1/auth")
     return MessageResponse(message="Logged out successfully")
 
 

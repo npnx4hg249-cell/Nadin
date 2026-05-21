@@ -116,7 +116,7 @@ function UsersTab() {
         onClose={() => setDeletingUser(null)}
         onConfirm={() => deletingUser && deleteMutation.mutate(deletingUser.id)}
         title="Delete user"
-        message={`Permanently delete "${deletingUser?.full_name}" (${deletingUser?.email})? This cannot be undone.`}
+        message={`Permanently delete "${deletingUser?.username}" (${deletingUser?.email})? This cannot be undone.`}
         confirmLabel="Delete user"
         loading={deleteMutation.isPending}
       />

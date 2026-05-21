@@ -80,7 +80,7 @@ export function DashboardPage() {
       {/* Greeting */}
       <div>
         <h2 className="text-2xl font-bold text-white">
-          {greeting()}, {user?.full_name.split(' ')[0]}
+          {greeting()}, {user?.username}
         </h2>
         <p className="text-sm text-gray-400 mt-1">
           Here's what's happening in your workspace today.

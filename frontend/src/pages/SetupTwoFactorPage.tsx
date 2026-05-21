@@ -31,7 +31,7 @@ export function SetupTwoFactorPage() {
     mutationFn: (code: string) => authApi.confirm2faSetup(code),
     onSuccess: (data) => {
       setBackupCodes(data.backup_codes)
-      updateUser({ is_2fa_enabled: true })
+      updateUser({ totp_enabled: true })
       setStep('backup-codes')
       toast.success('Two-factor authentication enabled!')
     },
