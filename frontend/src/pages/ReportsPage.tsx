@@ -31,7 +31,7 @@ const chartTooltipStyle = {
   fontSize: 12,
 }
 
-export default function ReportsPage() {
+export function ReportsPage() {
   const queryClient = useQueryClient()
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('')

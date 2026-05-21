@@ -333,7 +333,7 @@ function PluginsTab() {
 
 // ─── Main AdminPage ─────────────────────────────────────────────────────────────
 
-export default function AdminPage() {
+export function AdminPage() {
   const [activeTab, setActiveTab] = useState<Tab>('users')
 
   return (

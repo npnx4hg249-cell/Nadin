@@ -1,4 +1,4 @@
-import { LogIn, LogOut, AlertTriangle, Shield, Key, FileText, Plug, Settings, User } from 'lucide-react'
+import { LogIn, LogOut, AlertTriangle, Shield, Key, FileText, Plug, Settings, User, type LucideIcon } from 'lucide-react'
 import { cn, formatRelativeTime } from '@/lib/utils'
 import type { ActivityItem, AuditAction } from '@/types'
 
@@ -7,7 +7,7 @@ interface ActivityFeedProps {
   loading?: boolean
 }
 
-const actionConfig: Record<AuditAction, { icon: React.FC<{ size?: number }>, label: string }> = {
+const actionConfig: Record<AuditAction, { icon: LucideIcon; label: string }> = {
   'user.login': { icon: LogIn, label: 'User logged in' },
   'user.logout': { icon: LogOut, label: 'User logged out' },
   'user.login_failed': { icon: AlertTriangle, label: 'Login failed' },

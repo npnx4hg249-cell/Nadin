@@ -43,7 +43,7 @@ type ProfileValues = z.infer<typeof profileSchema>
 type ChangePasswordValues = z.infer<typeof changePasswordSchema>
 type Disable2faValues = z.infer<typeof disable2faSchema>
 
-export default function ProfilePage() {
+export function ProfilePage() {
   const user = useAuthStore((s) => s.user)
   const updateUser = useAuthStore((s) => s.updateUser)
   const navigate = useNavigate()

@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { Home, Zap } from 'lucide-react'
 import { Button } from '@/components/ui/Button'
 
-export default function NotFoundPage() {
+export function NotFoundPage() {
   return (
     <div className="min-h-screen bg-gray-950 flex flex-col items-center justify-center text-center px-4">
       <div className="w-16 h-16 rounded-2xl bg-blue-900/40 border border-blue-800 flex items-center justify-center mb-6">

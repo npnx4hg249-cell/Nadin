@@ -50,7 +50,7 @@ const chartTooltipStyle = {
   fontSize: 12,
 }
 
-export default function DashboardPage() {
+export function DashboardPage() {
   const user = useAuthStore((s) => s.user)
   const isAdmin = user?.role === 'admin'
 
