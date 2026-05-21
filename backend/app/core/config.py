@@ -53,6 +53,9 @@ class Settings(BaseSettings):
     # TOTP
     TOTP_ISSUER: str = "Nadin"
 
+    # Datasets storage
+    DATASETS_DIR: str = "/data/datasets"
+
     @field_validator("CORS_ORIGINS", mode="before")
     @classmethod
     def parse_cors_origins(cls, v: Any) -> List[str]:

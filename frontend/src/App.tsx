@@ -15,6 +15,8 @@ import { AdminPage } from '@/pages/AdminPage'
 import { ProfilePage } from '@/pages/ProfilePage'
 import { PluginsPage } from '@/pages/PluginsPage'
 import { NotFoundPage } from '@/pages/NotFoundPage'
+import { DataPage } from '@/pages/DataPage'
+import { AnalysisPage } from '@/pages/AnalysisPage'
 import { PageSpinner } from '@/components/ui/Spinner'
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
@@ -108,6 +110,8 @@ export default function App() {
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="reports" element={<ReportsPage />} />
+          <Route path="data" element={<DataPage />} />
+          <Route path="analysis" element={<AnalysisPage />} />
           <Route path="plugins" element={<PluginsPage />} />
           <Route path="profile" element={<ProfilePage />} />
           <Route path="setup-2fa" element={<SetupTwoFactorPage />} />
