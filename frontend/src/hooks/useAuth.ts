@@ -3,33 +3,32 @@ import { useNavigate } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { useAuthStore } from '@/store/authStore'
 import { authApi } from '@/api/auth'
+import { tokenStore } from '@/api/client'
 import type { LoginCredentials } from '@/types'
 
 export function useAuth() {
-  const { user, isAuthenticated, isLoading, pendingTwoFactor, setUser, clearUser, setPendingTwoFactor, setLoading } =
-    useAuthStore()
+  const { user, isAuthenticated, isLoading, pendingTwoFactor, setUser, clearUser, setPendingTwoFactor, setLoading } = useAuthStore()
   const navigate = useNavigate()
 
   const login = useCallback(
     async (credentials: LoginCredentials) => {
-      const response = await authApi.login(credentials)
-      if (response.requires_2fa) {
-        setPendingTwoFactor({ email: credentials.email })
-        navigate('/2fa-verify', { state: { email: credentials.email } })
-      } else {
-        setUser(response.user, response.access_token)
-        toast.success(`Welcome back, ${response.user.full_name.split(' ')[0]}!`)
-        navigate('/dashboard')
-      }
+      const { access_token } = await authApi.login(credentials)
+      tokenStore.set(access_token)
+      const user = await authApi.me()
+      setUser(user, access_token)
+      toast.success(`Welcome back, ${user.username}!`)
+      navigate('/dashboard')
     },
-    [setPendingTwoFactor, setUser, navigate],
+    [setUser, navigate],
   )
 
   const verify2fa = useCallback(
     async (code: string, email: string) => {
-      const response = await authApi.verify2fa({ code, email })
-      setUser(response.user, response.access_token)
-      toast.success(`Welcome back, ${response.user.full_name.split(' ')[0]}!`)
+      const { access_token } = await authApi.verify2fa({ code, email })
+      tokenStore.set(access_token)
+      const user = await authApi.me()
+      setUser(user, access_token)
+      toast.success(`Welcome back, ${user.username}!`)
       navigate('/dashboard')
     },
     [setUser, navigate],

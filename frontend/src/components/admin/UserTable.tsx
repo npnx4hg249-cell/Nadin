@@ -25,16 +25,16 @@ export function UserTable({
 }: UserTableProps) {
   const columns = [
     {
-      key: 'full_name',
+      key: 'username',
       header: 'User',
       sortable: true,
       render: (user: User) => (
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-semibold shrink-0">
-            {user.full_name.slice(0, 2).toUpperCase()}
+            {user.username.slice(0, 2).toUpperCase()}
           </div>
           <div>
-            <div className="text-sm font-medium text-white">{user.full_name}</div>
+            <div className="text-sm font-medium text-white">{user.username}</div>
             <div className="text-xs text-gray-500">{user.email}</div>
           </div>
         </div>
@@ -62,12 +62,12 @@ export function UserTable({
       ),
     },
     {
-      key: 'is_2fa_enabled',
+      key: 'totp_enabled',
       header: '2FA',
       width: '80px',
       render: (user: User) => (
-        <Badge variant={user.is_2fa_enabled ? 'success' : 'warning'}>
-          {user.is_2fa_enabled ? 'On' : 'Off'}
+        <Badge variant={user.totp_enabled ? 'success' : 'warning'}>
+          {user.totp_enabled ? 'On' : 'Off'}
         </Badge>
       ),
     },

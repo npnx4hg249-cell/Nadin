@@ -39,7 +39,7 @@ const NAV_ITEMS: NavItem[] = [
 
 export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const user = useAuthStore((s) => s.user)
-  const isAdmin = user?.role === 'admin'
+  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin'
 
   const visibleItems = NAV_ITEMS.filter((item) => !item.adminOnly || isAdmin)
 
@@ -92,10 +92,10 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
         <div className="p-4 border-t border-gray-800">
           <div className="flex items-center gap-3 min-w-0">
             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-semibold shrink-0">
-              {user.full_name.slice(0, 2).toUpperCase()}
+              {user.username.slice(0, 2).toUpperCase()}
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-medium text-white truncate">{user.full_name}</p>
+              <p className="text-sm font-medium text-white truncate">{user.username}</p>
               <p className="text-xs text-gray-500 capitalize">{user.role}</p>
             </div>
           </div>

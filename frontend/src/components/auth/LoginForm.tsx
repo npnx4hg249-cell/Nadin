@@ -34,11 +34,15 @@ export function LoginForm() {
     try {
       await login(values)
     } catch (err: unknown) {
-      const error = err as { response?: { data?: { detail?: string }; status?: number } }
+      const error = err as { response?: { data?: { detail?: unknown }; status?: number } }
       if (error.response?.status === 401) {
         toast.error('Invalid email or password')
       } else if (error.response?.data?.detail) {
-        toast.error(error.response.data.detail)
+        const detail = error.response.data.detail
+        const message = Array.isArray(detail)
+          ? (detail as { msg: string }[]).map((e) => e.msg).join('; ')
+          : String(detail)
+        toast.error(message)
       } else {
         toast.error('Login failed. Please try again.')
       }

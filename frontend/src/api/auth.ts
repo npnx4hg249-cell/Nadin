@@ -11,7 +11,10 @@ import type {
 
 export const authApi = {
   login: async (credentials: LoginCredentials): Promise<LoginResponse> => {
-    const { data } = await apiClient.post<LoginResponse>('/auth/login', credentials)
+    const { data } = await apiClient.post<LoginResponse>('/auth/login', {
+      username: credentials.email,
+      password: credentials.password,
+    })
     return data
   },
 
