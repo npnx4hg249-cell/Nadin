@@ -63,6 +63,8 @@ services:
     read_only: false
     tmpfs:
       - /tmp
+    volumes:
+      - datasets_data:/data/datasets
 
   frontend:
     build:
@@ -99,6 +101,7 @@ volumes:
   postgres_data:
   redis_data:
   nginx_logs:
+  datasets_data:
 
 networks:
   internal:

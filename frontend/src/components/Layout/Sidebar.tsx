@@ -8,6 +8,8 @@ import {
   ChevronLeft,
   ChevronRight,
   Zap,
+  Database,
+  BarChart2,
   type LucideIcon,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -27,6 +29,8 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+  { to: '/data', label: 'Data Sources', icon: Database },
+  { to: '/analysis', label: 'Analysis', icon: BarChart2 },
   { to: '/reports', label: 'Reports', icon: FileText },
   { to: '/plugins', label: 'Plugins', icon: Plug },
   { to: '/admin', label: 'Admin', icon: Settings, adminOnly: true },

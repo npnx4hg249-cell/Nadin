@@ -19,6 +19,8 @@ from app.core.database import AsyncSessionLocal, dispose_engine, engine, Base
 from app.modules.users.models import User, PermissionProfile, RefreshToken, AuditLog  # noqa: F401
 from app.modules.reports.models import ReportTemplate, Report, Dashboard  # noqa: F401
 from app.modules.plugins.models import Plugin, PluginHookLog  # noqa: F401
+from app.modules.data_ingest.models import Dataset  # noqa: F401
+from app.modules.analysis.models import AnalysisConfig  # noqa: F401
 
 from app.modules.auth.router import router as auth_router
 from app.modules.users.router import router as users_router
@@ -29,6 +31,10 @@ from app.modules.reports.router import (
     dashboards_router,
 )
 from app.modules.plugins.router import router as plugins_router
+from app.modules.data_ingest.router import router as ingest_router
+from app.modules.data_engine.router import router as engine_router
+from app.modules.analysis.router import router as analysis_router
+from app.modules.output.router import router as output_router
 
 logger = logging.getLogger("nadin")
 logging.basicConfig(
@@ -164,6 +170,10 @@ app.include_router(templates_router, prefix=API_PREFIX, tags=["Report Templates"
 app.include_router(reports_router, prefix=API_PREFIX, tags=["Reports"])
 app.include_router(dashboards_router, prefix=API_PREFIX, tags=["Dashboards"])
 app.include_router(plugins_router, prefix=API_PREFIX)
+app.include_router(ingest_router, prefix=API_PREFIX)
+app.include_router(engine_router, prefix=API_PREFIX)
+app.include_router(analysis_router, prefix=API_PREFIX)
+app.include_router(output_router, prefix=API_PREFIX)
 
 # ---------------------------------------------------------------------------
 # Health endpoint
