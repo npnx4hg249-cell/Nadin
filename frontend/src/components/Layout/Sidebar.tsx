@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import {
   LayoutDashboard,
   FileText,
@@ -8,6 +8,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Zap,
+  type LucideIcon,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/store/authStore'
@@ -20,7 +21,7 @@ interface SidebarProps {
 interface NavItem {
   to: string
   label: string
-  icon: React.FC<{ size?: number; className?: string }>
+  icon: LucideIcon
   adminOnly?: boolean
 }
 
