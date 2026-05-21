@@ -96,4 +96,4 @@ cd nadin && bash .reports/security-scan.sh
 
 ## License
 
-See [../LICENSE](../LICENSE).
+See [../LICENSE](https://github.com/npnx4hg249-cell/Nadin/blob/d9bd66d3b79f278e978c74c15f5c6bd502b838f0/GPL-3.0%20license).
