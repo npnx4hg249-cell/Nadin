@@ -14,7 +14,10 @@ from app.modules.admin.schemas import (
     AssignRoleRequest,
     AuditLogListOut,
     AuditLogOut,
+    DbStatsOut,
     Force2FARequest,
+    LlmSettingsOut,
+    LlmSettingsUpdate,
     PasswordResetResponse,
     SystemStatsOut,
 )
@@ -172,3 +175,53 @@ async def get_stats(
     """Return high-level system statistics. Admin only."""
     stats = await admin_service.get_system_stats(db)
     return SystemStatsOut(**stats)
+
+
+# ---------------------------------------------------------------------------
+# Database management
+# ---------------------------------------------------------------------------
+
+@router.get(
+    "/db-stats",
+    response_model=DbStatsOut,
+    summary="PostgreSQL table statistics",
+)
+async def get_db_stats(
+    db: AsyncSession = Depends(get_db),
+    _admin=Depends(require_admin),
+):
+    """Return table row counts and sizes. Admin only."""
+    stats = await admin_service.get_db_stats(db)
+    return DbStatsOut(**stats)
+
+
+# ---------------------------------------------------------------------------
+# LLM / system settings
+# ---------------------------------------------------------------------------
+
+@router.get(
+    "/llm-settings",
+    response_model=LlmSettingsOut,
+    summary="Get current LLM settings",
+)
+async def get_llm_settings(
+    db: AsyncSession = Depends(get_db),
+    _admin=Depends(require_admin),
+):
+    data = await admin_service.get_llm_settings(db)
+    return LlmSettingsOut(**data)
+
+
+@router.patch(
+    "/llm-settings",
+    response_model=LlmSettingsOut,
+    summary="Update LLM settings",
+)
+async def update_llm_settings(
+    body: LlmSettingsUpdate,
+    db: AsyncSession = Depends(get_db),
+    admin=Depends(require_admin),
+):
+    updates = body.model_dump(exclude_unset=True)
+    data = await admin_service.update_llm_settings(db, updates, admin_id=admin.id)
+    return LlmSettingsOut(**data)

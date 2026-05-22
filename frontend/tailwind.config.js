@@ -9,17 +9,24 @@ export default {
     extend: {
       colors: {
         brand: {
-          50:  '#eff6ff',
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
-          950: '#172554',
+          50:  '#eff4ff',
+          100: '#dce5ff',
+          200: '#b9cbff',
+          300: '#8da6ff',
+          400: '#6080ff',
+          500: '#3a58f8',
+          600: '#2640ea',
+          700: '#1c30cc',
+          800: '#1b2da5',  // primary navy — matches logo N body
+          900: '#1a2880',  // deep navy — logo dark
+          950: '#111847',
+        },
+        // Keep a navy alias for sidebar/structural use
+        navy: {
+          700: '#1e2e72',
+          800: '#172466',
+          900: '#111b50',
+          950: '#0c1238',
         },
       },
       fontFamily: {

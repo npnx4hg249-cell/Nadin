@@ -17,6 +17,7 @@ from app.core.database import AsyncSessionLocal, dispose_engine, engine, Base
 
 # Import all models so they are registered with SQLAlchemy metadata
 from app.modules.users.models import User, PermissionProfile, RefreshToken, AuditLog  # noqa: F401
+from app.modules.admin.models import SystemSetting  # noqa: F401
 from app.modules.reports.models import ReportTemplate, Report, Dashboard  # noqa: F401
 from app.modules.plugins.models import Plugin, PluginHookLog  # noqa: F401
 from app.modules.data_ingest.models import Dataset  # noqa: F401
@@ -80,8 +81,14 @@ async def lifespan(app: FastAPI):
         logger.warning("Redis unavailable (%s) — session caching disabled", exc)
         app.state.redis = None
 
-    # Seed initial admin user
+    # Seed initial admin user and default permission profiles
     await _seed_admin()
+    await _seed_default_profiles()
+
+    # Apply any LLM setting overrides stored in the DB
+    from app.modules.admin.service import apply_system_settings_from_db
+    async with AsyncSessionLocal() as db:
+        await apply_system_settings_from_db(db)
 
     yield
 
@@ -90,6 +97,52 @@ async def lifespan(app: FastAPI):
         await app.state.redis.close()
     await dispose_engine()
     logger.info("Nadin API shutdown complete")
+
+
+_DEFAULT_PROFILES = [
+    {
+        "name": "Super Administrator",
+        "description": "Full access to all features and settings",
+        "permissions": [
+            "reports.view", "reports.create", "reports.edit", "reports.delete",
+            "reports.run", "reports.export",
+            "plugins.view", "plugins.install", "plugins.configure",
+            "admin.users", "admin.audit", "admin.settings",
+        ],
+    },
+    {
+        "name": "Standard User",
+        "description": "Access to analysis tools and reports — no admin or plugin visibility",
+        "permissions": [
+            "reports.view", "reports.create", "reports.edit",
+            "reports.run", "reports.export",
+        ],
+    },
+]
+
+
+async def _seed_default_profiles() -> None:
+    """Create the two built-in permission profiles if they don't already exist."""
+    async with AsyncSessionLocal() as db:
+        try:
+            from sqlalchemy import select as _select
+            for profile_data in _DEFAULT_PROFILES:
+                existing = await db.execute(
+                    _select(PermissionProfile).where(PermissionProfile.name == profile_data["name"])
+                )
+                if existing.scalar_one_or_none():
+                    continue
+                profile = PermissionProfile(
+                    name=profile_data["name"],
+                    description=profile_data["description"],
+                    permissions=profile_data["permissions"],
+                )
+                db.add(profile)
+            await db.commit()
+            logger.info("Default permission profiles seeded")
+        except Exception as exc:
+            await db.rollback()
+            logger.error("Failed to seed default profiles: %s", exc)
 
 
 async def _seed_admin() -> None:

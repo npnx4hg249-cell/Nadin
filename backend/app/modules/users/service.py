@@ -134,7 +134,23 @@ async def get_profile_by_id(db: AsyncSession, profile_id: int) -> Optional[Permi
 
 async def list_profiles(db: AsyncSession) -> List[PermissionProfile]:
     result = await db.execute(select(PermissionProfile).order_by(PermissionProfile.name))
-    return list(result.scalars().all())
+    profiles = list(result.scalars().all())
+
+    if profiles:
+        ids = [p.id for p in profiles]
+        rows = await db.execute(
+            select(User.permission_profile_id, func.count(User.id))
+            .where(User.permission_profile_id.in_(ids))
+            .group_by(User.permission_profile_id)
+        )
+        count_map: dict[int, int] = dict(rows.all())
+    else:
+        count_map = {}
+
+    for p in profiles:
+        p.user_count = count_map.get(p.id, 0)  # type: ignore[attr-defined]
+
+    return profiles
 
 
 async def create_profile(
