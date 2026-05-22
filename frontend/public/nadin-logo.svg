@@ -1,16 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40" fill="none">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#2546cc"/>
-      <stop offset="100%" stop-color="#1a2880"/>
+    <linearGradient id="sl-bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#253aaa"/>
+      <stop offset="100%" stop-color="#152060"/>
     </linearGradient>
-    <linearGradient id="border" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#8098d0"/>
-      <stop offset="100%" stop-color="#4060a0"/>
+    <linearGradient id="sl-ch" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#d8e0f8"/>
+      <stop offset="40%" stop-color="#9aaad8"/>
+      <stop offset="100%" stop-color="#3a4c90"/>
     </linearGradient>
   </defs>
-  <rect width="40" height="40" rx="9" fill="url(#bg)"/>
-  <rect x="1.5" y="1.5" width="37" height="37" rx="7.5" fill="none" stroke="url(#border)" stroke-width="1.5"/>
-  <!-- N letter path -->
-  <path d="M9 31V9h5l12 15V9h5v22h-5L14 16v15z" fill="white"/>
+  <rect width="40" height="40" rx="9" fill="url(#sl-bg)"/>
+  <rect x="1.5" y="1.5" width="37" height="37" rx="7.5" fill="none" stroke="url(#sl-ch)" stroke-width="1.5"/>
+  <path d="M9 32V8h6l10 16V8h6v24h-6L15 16v16z" fill="white"/>
 </svg>
