@@ -7,7 +7,6 @@ import {
   Plug,
   ChevronLeft,
   ChevronRight,
-  Zap,
   Database,
   BarChart2,
   type LucideIcon,
@@ -33,7 +32,7 @@ const NAV_ITEMS: NavItem[] = [
   { to: '/data', labelKey: 'data', icon: Database },
   { to: '/analysis', labelKey: 'analysis', icon: BarChart2 },
   { to: '/reports', labelKey: 'reports', icon: FileText },
-  { to: '/plugins', labelKey: 'plugins', icon: Plug },
+  { to: '/plugins', labelKey: 'plugins', icon: Plug, adminOnly: true },
   { to: '/admin', labelKey: 'admin', icon: Settings, adminOnly: true },
   { to: '/profile', labelKey: 'profile', icon: User },
 ]
@@ -55,9 +54,11 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       {/* Logo */}
       <div className="flex items-center h-16 px-4 border-b border-gray-800 overflow-hidden">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shrink-0">
-            <Zap size={16} className="text-white" />
-          </div>
+          <img
+            src="/nadin-logo.svg"
+            alt="Nadin"
+            className="w-8 h-8 shrink-0"
+          />
           {!collapsed && (
             <span className="font-bold text-white text-lg tracking-tight truncate">
               Nadin
@@ -78,7 +79,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
                 cn(
                   'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
                   isActive
-                    ? 'bg-blue-600/20 text-blue-400 border border-blue-800/50'
+                    ? 'bg-brand-800/20 text-brand-400 border border-brand-700/40'
                     : 'text-gray-400 hover:text-white hover:bg-gray-800 border border-transparent',
                   collapsed && 'justify-center px-0',
                 )
@@ -96,7 +97,7 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
       {!collapsed && user && (
         <div className="p-4 border-t border-gray-800">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-xs font-semibold shrink-0">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-600 to-brand-900 flex items-center justify-center text-white text-xs font-semibold shrink-0">
               {user.username.slice(0, 2).toUpperCase()}
             </div>
             <div className="min-w-0">

@@ -144,19 +144,47 @@ export type Permission =
   | 'admin.settings'
 
 export interface PermissionProfile {
-  id: string
+  id: number
   name: string
   description: string
   permissions: Permission[]
   user_count: number
   created_at: string
-  updated_at: string
 }
 
 export interface PermissionProfilePayload {
   name: string
   description: string
   permissions: Permission[]
+}
+
+export interface CreateUserPayload {
+  email: string
+  username: string
+  password: string
+  role: User['role']
+  permission_profile_id?: number | null
+  is_active?: boolean
+}
+
+export interface DbTableStat {
+  table_name: string
+  row_count: number
+  total_size: string
+  index_size: string
+}
+
+export interface DbStats {
+  tables: DbTableStat[]
+  db_size: string
+  host: string
+  database: string
+}
+
+export interface LlmSettings {
+  ollama_url: string
+  ollama_model: string
+  llm_enabled: boolean
 }
 
 // ─── Admin — Audit Log ────────────────────────────────────────────────────────

@@ -44,7 +44,7 @@ export function PluginsPage() {
     (p) =>
       !search ||
       p.name.toLowerCase().includes(search.toLowerCase()) ||
-      p.description.toLowerCase().includes(search.toLowerCase()),
+      (p.description ?? '').toLowerCase().includes(search.toLowerCase()),
   )
 
   const enabledPlugins = filtered.filter((p) => p.status === 'enabled')

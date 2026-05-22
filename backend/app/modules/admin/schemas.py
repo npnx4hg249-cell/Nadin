@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional  # noqa: F401
 
 from pydantic import BaseModel, EmailStr, Field
 
@@ -63,3 +63,29 @@ class SystemStatsOut(BaseModel):
     total_dashboards: int
     total_plugins: int
     active_plugins: int
+
+
+class DbTableStat(BaseModel):
+    table_name: str
+    row_count: int
+    total_size: str
+    index_size: str
+
+
+class DbStatsOut(BaseModel):
+    tables: List[DbTableStat]
+    db_size: str
+    host: str
+    database: str
+
+
+class LlmSettingsOut(BaseModel):
+    ollama_url: str
+    ollama_model: str
+    llm_enabled: bool
+
+
+class LlmSettingsUpdate(BaseModel):
+    ollama_url: Optional[str] = None
+    ollama_model: Optional[str] = None
+    llm_enabled: Optional[bool] = None

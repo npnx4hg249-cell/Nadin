@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional  # noqa: F401
 
 from pydantic import BaseModel, EmailStr, Field, field_validator
 
@@ -15,7 +15,7 @@ from app.modules.users.models import UserRole
 class PermissionProfileBase(BaseModel):
     name: str = Field(..., min_length=1, max_length=128)
     description: Optional[str] = None
-    permissions: Dict[str, Any] = Field(default_factory=dict)
+    permissions: List[str] = Field(default_factory=list)
 
 
 class PermissionProfileCreate(PermissionProfileBase):
@@ -25,11 +25,12 @@ class PermissionProfileCreate(PermissionProfileBase):
 class PermissionProfileUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=1, max_length=128)
     description: Optional[str] = None
-    permissions: Optional[Dict[str, Any]] = None
+    permissions: Optional[List[str]] = None
 
 
 class PermissionProfileOut(PermissionProfileBase):
     id: int
+    user_count: int = 0
     created_by: Optional[int]
     created_at: datetime
 

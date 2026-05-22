@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import enum
 from datetime import datetime, timezone
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from sqlalchemy import (
     BigInteger,
@@ -37,7 +37,7 @@ class PermissionProfile(Base):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     name: Mapped[str] = mapped_column(String(128), unique=True, nullable=False)
     description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    permissions: Mapped[Dict[str, Any]] = mapped_column(JSONB, nullable=False, default=dict)
+    permissions: Mapped[List[str]] = mapped_column(JSONB, nullable=False, default=list)
     created_by: Mapped[Optional[int]] = mapped_column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
 

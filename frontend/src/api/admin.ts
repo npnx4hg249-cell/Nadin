@@ -7,6 +7,8 @@ import type {
   PaginationParams,
   DashboardStats,
   ActivityItem,
+  DbStats,
+  LlmSettings,
 } from '@/types'
 
 export const adminApi = {
@@ -25,38 +27,38 @@ export const adminApi = {
 
   // ─── Permission Profiles ───────────────────────────────────────────────
   listProfiles: async (): Promise<PermissionProfile[]> => {
-    const { data } = await apiClient.get<PermissionProfile[]>('/admin/permission-profiles')
+    const { data } = await apiClient.get<PermissionProfile[]>('/users/permission-profiles/')
     return data
   },
 
-  getProfile: async (id: string): Promise<PermissionProfile> => {
+  getProfile: async (id: number): Promise<PermissionProfile> => {
     const { data } = await apiClient.get<PermissionProfile>(
-      `/admin/permission-profiles/${id}`,
+      `/users/permission-profiles/${id}`,
     )
     return data
   },
 
   createProfile: async (payload: PermissionProfilePayload): Promise<PermissionProfile> => {
     const { data } = await apiClient.post<PermissionProfile>(
-      '/admin/permission-profiles',
+      '/users/permission-profiles/',
       payload,
     )
     return data
   },
 
   updateProfile: async (
-    id: string,
+    id: number,
     payload: PermissionProfilePayload,
   ): Promise<PermissionProfile> => {
-    const { data } = await apiClient.put<PermissionProfile>(
-      `/admin/permission-profiles/${id}`,
+    const { data } = await apiClient.patch<PermissionProfile>(
+      `/users/permission-profiles/${id}`,
       payload,
     )
     return data
   },
 
-  deleteProfile: async (id: string): Promise<void> => {
-    await apiClient.delete(`/admin/permission-profiles/${id}`)
+  deleteProfile: async (id: number): Promise<void> => {
+    await apiClient.delete(`/users/permission-profiles/${id}`)
   },
 
   // ─── Audit Log ─────────────────────────────────────────────────────────
@@ -72,6 +74,23 @@ export const adminApi = {
       '/admin/audit-log',
       { params },
     )
+    return data
+  },
+
+  // ─── Database Stats ────────────────────────────────────────────────────
+  getDbStats: async (): Promise<DbStats> => {
+    const { data } = await apiClient.get<DbStats>('/admin/db-stats')
+    return data
+  },
+
+  // ─── LLM Settings ─────────────────────────────────────────────────────
+  getLlmSettings: async (): Promise<LlmSettings> => {
+    const { data } = await apiClient.get<LlmSettings>('/admin/llm-settings')
+    return data
+  },
+
+  updateLlmSettings: async (payload: Partial<LlmSettings>): Promise<LlmSettings> => {
+    const { data } = await apiClient.patch<LlmSettings>('/admin/llm-settings', payload)
     return data
   },
 }
