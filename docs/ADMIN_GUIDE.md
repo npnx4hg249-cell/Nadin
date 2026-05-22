@@ -25,6 +25,11 @@ ADMIN_USERNAME=admin
 OLLAMA_URL=http://ollama:11434
 OLLAMA_MODEL=qwen2.5-coder:7b-instruct
 LLM_ENABLED=true
+
+# Set true only when serving over HTTPS (default false).
+# Safari and strict browsers will not send the refresh-token cookie
+# over plain HTTP if this is true, causing session expiry every 30 min.
+COOKIE_SECURE=false
 ```
 
 ### 2. Start the Stack
@@ -61,8 +66,39 @@ Navigate to `http://localhost` and log in with your admin credentials.
 
 **Immediately after first login:**
 1. Set up 2FA: Profile → Security → Enable 2FA
-2. Create permission profiles for your team roles
-3. Invite initial users
+2. Review the two built-in permission profiles (Super Administrator, Standard User) — add custom ones as needed
+3. Create users via Admin → Users → New User
+
+---
+
+## Admin Portal
+
+The Admin portal (visible only to admin and super_admin roles) has five tabs:
+
+### Users tab
+- View, search and page through all users
+- **New User** — create an account with email, username, password, role and active flag
+- Edit existing users (role, active status)
+- Delete non-self accounts
+
+### Profiles tab
+Built-in profiles seeded on first startup:
+
+| Profile | Permissions |
+|---------|-------------|
+| **Super Administrator** | Full access — reports, plugins, admin |
+| **Standard User** | Reports only — no plugins or admin visibility |
+
+Create additional profiles with any combination of granular permissions. Assign profiles to users on the user edit form.
+
+### Audit tab
+Immutable log of all authentication events, admin actions, and data operations.
+
+### Database tab
+Live PostgreSQL table statistics: row counts, dead tuples, disk usage per table. Useful for capacity planning and spotting bloated tables.
+
+### System (LLM Settings) tab
+Override the active Ollama URL and model at runtime without restarting the container. Changes are persisted in the `system_settings` table and applied immediately. Useful for switching models (e.g., from `qwen2.5-coder:7b-instruct` to a larger model) without a redeploy.
 
 ---
 
