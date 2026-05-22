@@ -35,6 +35,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Non-root user
 RUN groupadd -r nadin && useradd -r -g nadin --home /app --shell /sbin/nologin nadin
 
+# Create datasets directory with correct ownership so the named volume
+# inherits these permissions on first mount (Docker copies image content
+# into an empty named volume on creation).
+RUN mkdir -p /data/datasets && chown -R nadin:nadin /data/datasets
+
 WORKDIR /app
 
 # Copy installed packages from builder stage

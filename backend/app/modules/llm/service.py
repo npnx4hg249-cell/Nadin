@@ -88,12 +88,12 @@ async def _ollama_generate(prompt: str, system: str, max_tokens: int = 2048) -> 
         "options": {"temperature": 0.0, "num_predict": max_tokens},
     }
     try:
-        async with httpx.AsyncClient(timeout=120.0) as client:
+        async with httpx.AsyncClient(timeout=300.0) as client:
             response = await client.post(f"{settings.OLLAMA_URL}/api/generate", json=payload)
             response.raise_for_status()
             return response.json().get("response", "").strip()
     except httpx.TimeoutException:
-        raise RuntimeError("Ollama request timed out")
+        raise RuntimeError("Ollama request timed out after 300 s")
     except httpx.HTTPStatusError as exc:
         raise RuntimeError(f"Ollama HTTP error: {exc.response.status_code}")
     except Exception as exc:

@@ -22,6 +22,8 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     sourcemap: false,
+    // Target ES2020 so ?? / ?. / async-await are transpiled for older Safari
+    target: 'es2020',
     rollupOptions: {
       output: {
         manualChunks: {
