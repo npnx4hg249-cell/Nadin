@@ -141,6 +141,7 @@ See `.env.example` for the full list. Key variables:
 | `OLLAMA_URL` | | Ollama base URL (default: `http://ollama:11434`) |
 | `OLLAMA_MODEL` | | Model name (default: `qwen2.5-coder:7b-instruct`) |
 | `LLM_ENABLED` | | Enable LLM features (default: `true`) |
+| `COOKIE_SECURE` | | Set `true` only when serving over HTTPS (default: `false`) |
 
 ---
 
