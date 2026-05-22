@@ -37,21 +37,27 @@ def _safe_serialize(v: Any) -> Any:
     return str(v)
 
 
-def _run_query(parquet_path: str, sql: str) -> QueryResult:
+def _run_query(parquet_path: str, sql: str, limit: int = 1000) -> QueryResult:
     import duckdb
 
     con = duckdb.connect(":memory:")
     try:
         con.execute(f"CREATE VIEW dataset AS SELECT * FROM read_parquet('{parquet_path}')")
-        rel = con.execute(sql)
+        # Wrap in a subquery with LIMIT so unbounded queries don't OOM
+        safe_sql = f"SELECT * FROM ({sql}) __q LIMIT {limit + 1}"
+        try:
+            rel = con.execute(safe_sql)
+        except duckdb.Error as exc:
+            raise ValueError(str(exc)) from exc
         columns = [desc[0] for desc in rel.description]
         raw_rows = rel.fetchall()
-        rows = [[_safe_serialize(v) for v in row] for row in raw_rows]
+        truncated = len(raw_rows) > limit
+        rows = [[_safe_serialize(v) for v in row] for row in raw_rows[:limit]]
         return QueryResult(
             columns=columns,
             rows=rows,
             row_count=len(rows),
-            truncated=False,
+            truncated=truncated,
         )
     finally:
         con.close()
@@ -66,16 +72,16 @@ def _validate_sql(sql: str) -> None:
             raise ValueError(f"Forbidden keyword in SQL: {keyword}")
 
 
-async def query_dataset(dataset_id: int, sql: str) -> QueryResult:
+async def query_dataset(dataset_id: int, sql: str, limit: int = 1000) -> QueryResult:
     _validate_sql(sql)
     parquet_path = _get_parquet_path(dataset_id)
-    return await asyncio.to_thread(_run_query, parquet_path, sql)
+    return await asyncio.to_thread(_run_query, parquet_path, sql, limit)
 
 
 async def preview_dataset(dataset_id: int, limit: int = 100) -> QueryResult:
     parquet_path = _get_parquet_path(dataset_id)
     sql = f"SELECT * FROM dataset LIMIT {limit}"
-    return await asyncio.to_thread(_run_query, parquet_path, sql)
+    return await asyncio.to_thread(_run_query, parquet_path, sql, limit)
 
 
 def _quote_col(col: str) -> str:

@@ -1,9 +1,20 @@
 #!/bin/sh
 # ---------------------------------------------------------------------------
 # Nadin backend entrypoint
-# Waits for PostgreSQL, runs Alembic migrations, then starts uvicorn.
+# Fixes dataset volume ownership (runs as root), drops to nadin via gosu,
+# waits for PostgreSQL, runs Alembic migrations, then starts uvicorn.
 # ---------------------------------------------------------------------------
 set -e
+
+# ---------------------------------------------------------------------------
+# 0. Fix /data/datasets permissions then re-exec as nadin
+#    This handles both new and pre-existing volumes owned by root.
+# ---------------------------------------------------------------------------
+if [ "$(id -u)" = "0" ]; then
+    mkdir -p /data/datasets
+    chown -R nadin:nadin /data/datasets
+    exec gosu nadin "$0" "$@"
+fi
 
 RETRIES=${POSTGRES_CONNECT_RETRIES:-30}
 SLEEP_INTERVAL=2

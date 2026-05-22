@@ -26,18 +26,17 @@ LABEL maintainer="Nadin Project" \
       description="Nadin — modular dashboard & report generation backend" \
       version="1.0.0"
 
-# Runtime-only OS deps
+# Runtime-only OS deps + gosu for privilege drop in entrypoint
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libpq5 \
     curl \
+    gosu \
     && rm -rf /var/lib/apt/lists/*
 
-# Non-root user
+# Non-root user (entrypoint starts as root, drops to nadin after volume fixup)
 RUN groupadd -r nadin && useradd -r -g nadin --home /app --shell /sbin/nologin nadin
 
-# Create datasets directory with correct ownership so the named volume
-# inherits these permissions on first mount (Docker copies image content
-# into an empty named volume on creation).
+# Pre-create datasets dir so Docker volume init copies correct ownership
 RUN mkdir -p /data/datasets && chown -R nadin:nadin /data/datasets
 
 WORKDIR /app
@@ -51,7 +50,9 @@ COPY --chown=nadin:nadin . .
 # Make entrypoint executable
 RUN chmod +x /app/entrypoint.sh
 
-USER nadin
+# Container starts as root so entrypoint can fix volume permissions;
+# entrypoint then drops to nadin via gosu before starting uvicorn.
+EXPOSE 8000
 
 EXPOSE 8000
 
