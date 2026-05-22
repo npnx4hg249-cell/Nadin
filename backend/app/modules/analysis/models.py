@@ -34,3 +34,32 @@ class AnalysisConfig(Base):
 
     dataset: Mapped[Optional[object]] = relationship("Dataset", foreign_keys=[dataset_id])
     owner: Mapped[Optional[object]] = relationship("User", foreign_keys=[owner_id])
+
+
+class Insight(Base):
+    __tablename__ = "insights"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    name: Mapped[str] = mapped_column(String(256), nullable=False)
+    description: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    dataset_id: Mapped[int] = mapped_column(
+        Integer, ForeignKey("datasets.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    owner_id: Mapped[Optional[int]] = mapped_column(
+        Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+    )
+    query_mode: Mapped[str] = mapped_column(String(32), nullable=False, default="metric_builder")
+    sql_query: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    columns: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSONB, nullable=True)
+    rows: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSONB, nullable=True)
+    row_count: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    chart_type: Mapped[Optional[str]] = mapped_column(String(32), nullable=True)
+    report_ids: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSONB, nullable=False, default=list)
+    dashboard_ids: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSONB, nullable=False, default=list)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_utcnow)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=_utcnow, onupdate=_utcnow
+    )
+
+    dataset: Mapped[Optional[object]] = relationship("Dataset", foreign_keys=[dataset_id])
+    owner: Mapped[Optional[object]] = relationship("User", foreign_keys=[owner_id])

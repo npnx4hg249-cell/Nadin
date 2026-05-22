@@ -13,6 +13,11 @@ from app.modules.analysis.schemas import (
     AnalysisConfigUpdate,
     AnalysisResult,
     AnalysisRunRequest,
+    InsightAddToRequest,
+    InsightCreate,
+    InsightListOut,
+    InsightOut,
+    InsightUpdate,
 )
 from app.modules.data_ingest import service as ingest_service
 
@@ -163,3 +168,98 @@ async def run_config(
         raise HTTPException(status_code=400, detail=str(exc))
     except FileNotFoundError as exc:
         raise HTTPException(status_code=404, detail=str(exc))
+
+
+# ─── Insight CRUD ──────────────────────────────────────────────────────────────
+
+
+@router.post("/insights", response_model=InsightOut, status_code=status.HTTP_201_CREATED)
+async def create_insight(
+    body: InsightCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(require_editor),
+):
+    await _check_dataset_access(body.dataset_id, current_user, db)
+    insight = await analysis_service.create_insight(db=db, body=body, owner_id=current_user.id)
+    return InsightOut.model_validate(insight)
+
+
+@router.get("/insights", response_model=InsightListOut)
+async def list_insights(
+    skip: int = Query(0, ge=0),
+    limit: int = Query(50, ge=1, le=200),
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    total, items = await analysis_service.list_insights(
+        db=db, owner_id=current_user.id, skip=skip, limit=limit
+    )
+    return InsightListOut(total=total, items=[InsightOut.model_validate(i) for i in items])
+
+
+@router.get("/insights/{insight_id}", response_model=InsightOut)
+async def get_insight(
+    insight_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(get_current_user),
+):
+    insight = await analysis_service.get_insight_by_id(db, insight_id)
+    if not insight:
+        raise HTTPException(status_code=404, detail="Insight not found")
+    if insight.owner_id != current_user.id:
+        from app.modules.users.models import UserRole
+        if current_user.role not in {UserRole.admin, UserRole.super_admin}:
+            raise HTTPException(status_code=403, detail="Access denied")
+    return InsightOut.model_validate(insight)
+
+
+@router.patch("/insights/{insight_id}", response_model=InsightOut)
+async def update_insight(
+    insight_id: int,
+    body: InsightUpdate,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(require_editor),
+):
+    insight = await analysis_service.get_insight_by_id(db, insight_id)
+    if not insight:
+        raise HTTPException(status_code=404, detail="Insight not found")
+    if insight.owner_id != current_user.id:
+        from app.modules.users.models import UserRole
+        if current_user.role not in {UserRole.admin, UserRole.super_admin}:
+            raise HTTPException(status_code=403, detail="Not authorized")
+    updated = await analysis_service.update_insight(db=db, insight=insight, body=body)
+    return InsightOut.model_validate(updated)
+
+
+@router.delete("/insights/{insight_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_insight(
+    insight_id: int,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(require_editor),
+):
+    insight = await analysis_service.get_insight_by_id(db, insight_id)
+    if not insight:
+        raise HTTPException(status_code=404, detail="Insight not found")
+    if insight.owner_id != current_user.id:
+        from app.modules.users.models import UserRole
+        if current_user.role not in {UserRole.admin, UserRole.super_admin}:
+            raise HTTPException(status_code=403, detail="Not authorized")
+    await analysis_service.delete_insight(db=db, insight=insight)
+
+
+@router.post("/insights/{insight_id}/add-to", response_model=InsightOut)
+async def add_insight_to_targets(
+    insight_id: int,
+    body: InsightAddToRequest,
+    db: AsyncSession = Depends(get_db),
+    current_user=Depends(require_editor),
+):
+    insight = await analysis_service.get_insight_by_id(db, insight_id)
+    if not insight:
+        raise HTTPException(status_code=404, detail="Insight not found")
+    if insight.owner_id != current_user.id:
+        from app.modules.users.models import UserRole
+        if current_user.role not in {UserRole.admin, UserRole.super_admin}:
+            raise HTTPException(status_code=403, detail="Not authorized")
+    updated = await analysis_service.add_insight_to_targets(db=db, insight=insight, body=body)
+    return InsightOut.model_validate(updated)

@@ -56,6 +56,11 @@ class Settings(BaseSettings):
     # Datasets storage
     DATASETS_DIR: str = "/data/datasets"
 
+    # LLM (Ollama) — NL-to-SQL
+    OLLAMA_URL: str = "http://ollama:11434"
+    OLLAMA_MODEL: str = "qwen2.5-coder:7b-instruct"
+    LLM_ENABLED: bool = True
+
     @field_validator("CORS_ORIGINS", mode="before")
     @classmethod
     def parse_cors_origins(cls, v: Any) -> List[str]:

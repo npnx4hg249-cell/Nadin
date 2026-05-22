@@ -34,6 +34,24 @@ services:
     security_opt:
       - no-new-privileges:true
 
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    networks:
+      - internal
+    volumes:
+      - ollama_data:/root/.ollama
+    security_opt:
+      - no-new-privileges:true
+    # GPU passthrough (optional — comment out if no GPU available)
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+
   backend:
     build:
       context: ./backend
@@ -51,11 +69,16 @@ services:
       REFRESH_TOKEN_EXPIRE_DAYS: ${REFRESH_TOKEN_EXPIRE_DAYS:-7}
       CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost}
       TOTP_ISSUER: ${TOTP_ISSUER:-Nadin}
+      OLLAMA_URL: ${OLLAMA_URL:-http://ollama:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen2.5-coder:7b-instruct}
+      LLM_ENABLED: ${LLM_ENABLED:-true}
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
+      ollama:
+        condition: service_started
     networks:
       - internal
     security_opt:
@@ -102,6 +125,7 @@ volumes:
   redis_data:
   nginx_logs:
   datasets_data:
+  ollama_data:
 
 networks:
   internal:
