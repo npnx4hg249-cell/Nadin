@@ -72,6 +72,8 @@ services:
       OLLAMA_URL: ${OLLAMA_URL:-http://ollama:11434}
       OLLAMA_MODEL: ${OLLAMA_MODEL:-qwen2.5-coder:7b-instruct}
       LLM_ENABLED: ${LLM_ENABLED:-true}
+      # Set COOKIE_SECURE=true only when serving over HTTPS
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
     depends_on:
       postgres:
         condition: service_healthy

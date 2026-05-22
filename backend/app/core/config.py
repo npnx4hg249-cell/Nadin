@@ -56,6 +56,10 @@ class Settings(BaseSettings):
     # Datasets storage
     DATASETS_DIR: str = "/data/datasets"
 
+    # Set to true only when serving over HTTPS; Secure cookies won't be sent
+    # by browsers (especially Safari) over plain HTTP.
+    COOKIE_SECURE: bool = False
+
     # LLM (Ollama) — NL-to-SQL
     OLLAMA_URL: str = "http://ollama:11434"
     OLLAMA_MODEL: str = "qwen2.5-coder:7b-instruct"
