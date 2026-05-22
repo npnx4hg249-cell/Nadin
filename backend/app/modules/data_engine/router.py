@@ -34,7 +34,7 @@ async def run_query(
 ):
     await _get_accessible_dataset(body.dataset_id, current_user, db)
     try:
-        return await engine_service.query_dataset(body.dataset_id, body.sql)
+        return await engine_service.query_dataset(body.dataset_id, body.sql, body.limit)
     except ValueError as exc:
         raise HTTPException(status_code=400, detail=str(exc))
     except FileNotFoundError as exc:
