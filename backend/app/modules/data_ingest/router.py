@@ -19,9 +19,13 @@ async def upload_dataset(
     name: str = Form(...),
     description: Optional[str] = Form(None),
     is_public: bool = Form(False),
+    translate_to: Optional[str] = Form(None),
     db: AsyncSession = Depends(get_db),
     current_user=Depends(require_editor),
 ):
+    if translate_to is not None and translate_to not in ("en", "de"):
+        from fastapi import HTTPException
+        raise HTTPException(status_code=400, detail="translate_to must be 'en' or 'de'")
     dataset = await ingest_service.process_upload(
         db=db,
         file=file,
@@ -29,6 +33,7 @@ async def upload_dataset(
         description=description,
         owner_id=current_user.id,
         is_public=is_public,
+        translate_to=translate_to,
     )
     return DatasetOut.model_validate(dataset)
 

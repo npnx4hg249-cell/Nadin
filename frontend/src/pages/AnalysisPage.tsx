@@ -37,6 +37,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts'
+import { useT } from '@/i18n'
 import { ingestApi } from '@/api/ingest'
 import { analysisApi } from '@/api/analysis'
 import { outputApi } from '@/api/output'
@@ -66,10 +67,10 @@ type QueryMode = 'metric_builder' | 'natural_language' | 'raw_sql'
 type ResultTab = 'table' | 'chart'
 type ChartType = 'bar' | 'line' | 'pie' | 'scatter'
 
-const QUERY_MODES: { id: QueryMode; label: string; icon: React.ReactNode }[] = [
-  { id: 'metric_builder', label: 'Metric Builder', icon: <Sliders size={13} /> },
-  { id: 'natural_language', label: 'Natural Language', icon: <Sparkles size={13} /> },
-  { id: 'raw_sql', label: 'Raw SQL', icon: <Code2 size={13} /> },
+const QUERY_MODES: { id: QueryMode; icon: React.ReactNode }[] = [
+  { id: 'metric_builder', icon: <Sliders size={13} /> },
+  { id: 'natural_language', icon: <Sparkles size={13} /> },
+  { id: 'raw_sql', icon: <Code2 size={13} /> },
 ]
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -230,6 +231,7 @@ function SaveInsightModal({
   onClose,
   onSaved,
 }: SaveInsightModalProps) {
+  const t = useT()
   const [name, setName] = useState('')
   const [description, setDescription] = useState('')
 
@@ -263,7 +265,7 @@ function SaveInsightModal({
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-800">
           <h3 className="text-sm font-semibold text-white flex items-center gap-2">
             <Bookmark size={15} className="text-purple-400" />
-            Save as Insight
+            {t.insight.saveTitle}
           </h3>
           <button onClick={onClose} className="text-gray-500 hover:text-white">
             <X size={15} />
@@ -276,7 +278,7 @@ function SaveInsightModal({
               autoFocus
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Monthly revenue by region"
+              placeholder={t.insight.namePlaceholder}
               className="w-full rounded-md border border-gray-600 bg-gray-800 text-white text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-gray-600"
             />
           </div>
@@ -286,7 +288,7 @@ function SaveInsightModal({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={2}
-              placeholder="Optional notes about this insight"
+              placeholder={t.insight.descPlaceholder}
               className="w-full rounded-md border border-gray-600 bg-gray-800 text-white text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-gray-600 resize-none"
             />
           </div>
@@ -298,10 +300,10 @@ function SaveInsightModal({
               loading={createMutation.isPending}
               disabled={!name.trim()}
             >
-              Save Insight
+              {t.insight.saveBtn}
             </Button>
             <Button variant="ghost" onClick={onClose} className="flex-1">
-              Cancel
+              {t.common.cancel}
             </Button>
           </div>
         </div>
@@ -318,6 +320,7 @@ interface AddToTargetsProps {
 }
 
 function AddToTargetsPanel({ insightId, onClose }: AddToTargetsProps) {
+  const t = useT()
   const queryClient = useQueryClient()
   const [selectedReports, setSelectedReports] = useState<Set<number>>(new Set())
   const [selectedDashboards, setSelectedDashboards] = useState<Set<number>>(new Set())
@@ -380,7 +383,7 @@ function AddToTargetsPanel({ insightId, onClose }: AddToTargetsProps) {
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-800">
           <h3 className="text-sm font-semibold text-white flex items-center gap-2">
             <Plus size={15} className="text-blue-400" />
-            Add Insight to…
+            {t.insight.addTitle}
           </h3>
           <button onClick={onClose} className="text-gray-500 hover:text-white">
             <X size={15} />
@@ -391,12 +394,12 @@ function AddToTargetsPanel({ insightId, onClose }: AddToTargetsProps) {
           {/* Reports */}
           <div>
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-              <FileText size={12} /> Reports
+              <FileText size={12} /> {t.insight.reportsLabel}
             </p>
             {loadingReports ? (
-              <div className="flex items-center gap-2 text-xs text-gray-500"><Loader2 size={12} className="animate-spin" /> Loading…</div>
+              <div className="flex items-center gap-2 text-xs text-gray-500"><Loader2 size={12} className="animate-spin" /> {t.common.loading}</div>
             ) : reports.length === 0 ? (
-              <p className="text-xs text-gray-600 italic">No reports yet — create one first</p>
+              <p className="text-xs text-gray-600 italic">{t.insight.noReports}</p>
             ) : (
               <div className="space-y-1">
                 {reports.map((r: { id: number; name: string }) => (
@@ -423,12 +426,12 @@ function AddToTargetsPanel({ insightId, onClose }: AddToTargetsProps) {
           {/* Dashboards */}
           <div>
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1.5">
-              <LayoutDashboard size={12} /> Dashboards
+              <LayoutDashboard size={12} /> {t.insight.dashboardsLabel}
             </p>
             {loadingDashboards ? (
-              <div className="flex items-center gap-2 text-xs text-gray-500"><Loader2 size={12} className="animate-spin" /> Loading…</div>
+              <div className="flex items-center gap-2 text-xs text-gray-500"><Loader2 size={12} className="animate-spin" /> {t.common.loading}</div>
             ) : dashboards.length === 0 ? (
-              <p className="text-xs text-gray-600 italic">No dashboards yet — create one first</p>
+              <p className="text-xs text-gray-600 italic">{t.insight.noDashboards}</p>
             ) : (
               <div className="space-y-1">
                 {dashboards.map((d: { id: number; name: string }) => (
@@ -461,10 +464,10 @@ function AddToTargetsPanel({ insightId, onClose }: AddToTargetsProps) {
             loading={addMutation.isPending}
             disabled={nothingSelected}
           >
-            Add to Selected
+            {t.insight.addBtn}
           </Button>
           <Button variant="ghost" onClick={onClose} className="flex-1">
-            Cancel
+            {t.common.cancel}
           </Button>
         </div>
       </div>
@@ -475,6 +478,7 @@ function AddToTargetsPanel({ insightId, onClose }: AddToTargetsProps) {
 // ─── Main Page ─────────────────────────────────────────────────────────────────
 
 export function AnalysisPage() {
+  const t = useT()
   const [searchParams] = useSearchParams()
   const initialDatasetId = searchParams.get('dataset') ? Number(searchParams.get('dataset')) : null
 
@@ -644,13 +648,13 @@ export function AnalysisPage() {
         <div className="p-4 border-b border-gray-800">
           <h2 className="text-sm font-semibold text-white flex items-center gap-2">
             <BarChart2 size={15} className="text-blue-400" />
-            Analysis Workspace
+            {t.analysis.title}
           </h2>
         </div>
 
         {/* Dataset selector */}
         <div className="p-3 border-b border-gray-800">
-          <label className="block text-xs font-medium text-gray-400 mb-1.5">Dataset</label>
+          <label className="block text-xs font-medium text-gray-400 mb-1.5">{t.analysis.datasetLabel}</label>
           {loadingDatasets ? (
             <div className="h-8 bg-gray-800 rounded animate-pulse" />
           ) : (
@@ -663,7 +667,7 @@ export function AnalysisPage() {
                   'pl-2 pr-6 py-1.5 appearance-none focus:outline-none focus:ring-1 focus:ring-blue-500',
                 )}
               >
-                <option value="">Select a dataset…</option>
+                <option value="">{t.analysis.datasetPlaceholder}</option>
                 {readyDatasets.map((d) => (
                   <option key={d.id} value={d.id}>
                     {d.name}
@@ -677,7 +681,7 @@ export function AnalysisPage() {
 
         {/* Schema explorer */}
         <div className="flex-1 overflow-y-auto p-3">
-          <p className="text-xs font-medium text-gray-400 mb-2">Columns</p>
+          <p className="text-xs font-medium text-gray-400 mb-2">{t.analysis.columnsLabel}</p>
           {selectedDataset ? (
             <SchemaExplorer
               columns={columns}
@@ -685,7 +689,7 @@ export function AnalysisPage() {
               onAddGroupBy={addGroupByColumn}
             />
           ) : (
-            <p className="text-xs text-gray-600 italic">Select a dataset to see columns</p>
+            <p className="text-xs text-gray-600 italic">{t.analysis.columnsEmpty}</p>
           )}
         </div>
       </div>
@@ -712,7 +716,7 @@ export function AnalysisPage() {
                 )}
               >
                 {mode.icon}
-                {mode.label}
+                {t.analysis.queryModes[mode.id]}
               </button>
             ))}
           </div>
@@ -721,11 +725,11 @@ export function AnalysisPage() {
           {queryMode === 'metric_builder' && (
             <div className="space-y-3">
               <div>
-                <p className="text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">Metrics</p>
+                <p className="text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">{t.analysis.metricsLabel}</p>
                 <MetricBuilder metrics={metrics} availableColumns={columnNames} onChange={setMetrics} />
               </div>
               <div>
-                <p className="text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">Group By</p>
+                <p className="text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">{t.analysis.groupByLabel}</p>
                 <div className="flex flex-wrap gap-1.5">
                   {groupBy.map((col) => (
                     <span key={col} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs bg-purple-900/40 text-purple-300 border border-purple-800/50">
@@ -733,7 +737,7 @@ export function AnalysisPage() {
                       <button onClick={() => setGroupBy((p) => p.filter((c) => c !== col))} className="hover:text-purple-100"><X size={10} /></button>
                     </span>
                   ))}
-                  {groupBy.length === 0 && <span className="text-xs text-gray-600 italic">Click +group on a column to group by it</span>}
+                  {groupBy.length === 0 && <span className="text-xs text-gray-600 italic">{t.analysis.groupByEmpty}</span>}
                 </div>
               </div>
             </div>
@@ -744,7 +748,7 @@ export function AnalysisPage() {
             <div className="space-y-3">
               <div>
                 <label className="block text-xs font-medium text-gray-400 mb-1.5">
-                  Describe what you want to know
+                  {t.analysis.questionLabel}
                 </label>
                 <textarea
                   value={nlQuestion}
@@ -754,7 +758,7 @@ export function AnalysisPage() {
                     setGeneratedSql('')
                   }}
                   rows={3}
-                  placeholder="e.g. Show me total sales by region for the last 6 months"
+                  placeholder={t.analysis.questionPlaceholder}
                   className="w-full rounded-md border border-gray-600 bg-gray-800 text-white text-sm px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-gray-600 resize-none"
                 />
               </div>
@@ -771,18 +775,18 @@ export function AnalysisPage() {
                   onClick={generateSql}
                   disabled={!nlQuestion.trim() || !selectedDatasetId || nlStatus === 'generating'}
                 >
-                  {nlStatus === 'generating' ? 'Generating…' : 'Generate SQL'}
+                  {nlStatus === 'generating' ? t.analysis.generating : t.analysis.generateSql}
                 </Button>
                 {nlStatus === 'error' && (
                   <span className="flex items-center gap-1 text-xs text-red-400">
-                    <AlertCircle size={12} /> LLM unavailable
+                    <AlertCircle size={12} /> {t.analysis.llmUnavailable}
                   </span>
                 )}
               </div>
 
               {generatedSql && (
                 <div>
-                  <p className="text-xs font-medium text-gray-400 mb-1">Generated SQL — review before running:</p>
+                  <p className="text-xs font-medium text-gray-400 mb-1">{t.analysis.generatedSqlLabel}</p>
                   <textarea
                     value={generatedSql}
                     onChange={(e) => setGeneratedSql(e.target.value)}
@@ -797,7 +801,7 @@ export function AnalysisPage() {
           {/* ── Raw SQL ── */}
           {queryMode === 'raw_sql' && (
             <div>
-              <label className="block text-xs font-medium text-gray-400 mb-1.5">SQL Query</label>
+              <label className="block text-xs font-medium text-gray-400 mb-1.5">{t.analysis.sqlLabel}</label>
               <textarea
                 value={rawSql}
                 onChange={(e) => setRawSql(e.target.value)}
@@ -806,7 +810,7 @@ export function AnalysisPage() {
                 className="w-full rounded-md border border-gray-600 bg-gray-800/80 text-emerald-300 text-xs font-mono px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500 placeholder-gray-600 resize-none"
                 spellCheck={false}
               />
-              <p className="text-xs text-gray-600 mt-1">Table name is always <code className="text-gray-400">dataset</code>. SELECT only.</p>
+              <p className="text-xs text-gray-600 mt-1">{t.analysis.sqlNote} <code className="text-gray-400">dataset</code>. {t.analysis.selectOnly}</p>
             </div>
           )}
 
@@ -816,7 +820,7 @@ export function AnalysisPage() {
             loading={runMutation.isPending}
             disabled={!canRun}
           >
-            Run Analysis
+            {t.analysis.runBtn}
           </Button>
         </div>
 
@@ -842,7 +846,7 @@ export function AnalysisPage() {
                     )}
                   >
                     <Table size={12} />
-                    Table
+                    {t.analysis.tableTab}
                     <span className="text-gray-500">({result.row_count})</span>
                   </button>
                   <button
@@ -853,7 +857,7 @@ export function AnalysisPage() {
                     )}
                   >
                     <BarChart2 size={12} />
-                    Chart
+                    {t.analysis.chartTab}
                   </button>
                 </div>
 
@@ -885,7 +889,7 @@ export function AnalysisPage() {
                       onClick={() => setAddToModalInsightId(lastSavedInsightId)}
                       className="border-purple-700/50 text-purple-300 hover:border-purple-600"
                     >
-                      Add to Report/Dashboard
+                      {t.analysis.addToTarget}
                     </Button>
                   ) : (
                     <Button
@@ -895,7 +899,7 @@ export function AnalysisPage() {
                       onClick={() => setSaveModalOpen(true)}
                       className="border-purple-700/50 text-purple-300 hover:border-purple-600"
                     >
-                      Save as Insight
+                      {t.analysis.saveInsight}
                     </Button>
                   )}
 
@@ -927,11 +931,11 @@ export function AnalysisPage() {
             <div className="flex flex-col items-center justify-center flex-1 text-center gap-3">
               <BarChart2 size={32} className="text-gray-700" />
               <div>
-                <p className="text-sm font-medium text-gray-400">No insights yet</p>
+                <p className="text-sm font-medium text-gray-400">{t.analysis.noResultsTitle}</p>
                 <p className="text-xs text-gray-600 mt-1">
-                  {queryMode === 'metric_builder' && 'Select a dataset, add metrics, then click Run Analysis'}
-                  {queryMode === 'natural_language' && 'Ask a question in plain English and generate SQL automatically'}
-                  {queryMode === 'raw_sql' && 'Write a SELECT query and click Run Analysis'}
+                  {queryMode === 'metric_builder' && t.analysis.noResults.metric_builder}
+                  {queryMode === 'natural_language' && t.analysis.noResults.natural_language}
+                  {queryMode === 'raw_sql' && t.analysis.noResults.raw_sql}
                 </p>
               </div>
             </div>

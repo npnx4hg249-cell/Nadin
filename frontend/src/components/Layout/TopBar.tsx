@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom'
 import { useTheme } from '@/hooks/useTheme'
 import { useAuth } from '@/hooks/useAuth'
 import { useAuthStore } from '@/store/authStore'
+import { useLanguageStore } from '@/store/languageStore'
+import { useT } from '@/i18n'
 import { cn } from '@/lib/utils'
 
 interface TopBarProps {
@@ -14,6 +16,8 @@ export function TopBar({ title }: TopBarProps) {
   const { isDark, toggleTheme } = useTheme()
   const { logout } = useAuth()
   const user = useAuthStore((s) => s.user)
+  const { language, setLanguage } = useLanguageStore()
+  const t = useT()
   const [userMenuOpen, setUserMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
@@ -31,18 +35,46 @@ export function TopBar({ title }: TopBarProps) {
     <header className="h-16 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-6 shrink-0">
       {/* Left: Page title */}
       <div>
-        {title && (
-          <h1 className="text-base font-semibold text-white">{title}</h1>
-        )}
+        {title && <h1 className="text-base font-semibold text-white">{title}</h1>}
       </div>
 
       {/* Right: actions */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1">
+        {/* Language toggle */}
+        <div className="flex items-center rounded-lg border border-gray-700 overflow-hidden mr-1">
+          <button
+            onClick={() => setLanguage('en')}
+            className={cn(
+              'px-2.5 py-1 text-xs font-semibold transition-colors',
+              language === 'en'
+                ? 'bg-blue-600 text-white'
+                : 'text-gray-400 hover:text-white hover:bg-gray-800',
+            )}
+            aria-label="English"
+            title={t.topbar.language + ': English'}
+          >
+            EN
+          </button>
+          <button
+            onClick={() => setLanguage('de')}
+            className={cn(
+              'px-2.5 py-1 text-xs font-semibold transition-colors',
+              language === 'de'
+                ? 'bg-blue-600 text-white'
+                : 'text-gray-400 hover:text-white hover:bg-gray-800',
+            )}
+            aria-label="Deutsch"
+            title={t.topbar.language + ': Deutsch'}
+          >
+            DE
+          </button>
+        </div>
+
         {/* Theme toggle */}
         <button
           onClick={toggleTheme}
           className="w-8 h-8 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 flex items-center justify-center transition-colors"
-          aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+          aria-label={isDark ? t.topbar.lightMode : t.topbar.darkMode}
         >
           {isDark ? <Sun size={16} /> : <Moon size={16} />}
         </button>
@@ -91,14 +123,14 @@ export function TopBar({ title }: TopBarProps) {
                   className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-gray-300 hover:text-white hover:bg-gray-700 transition-colors"
                 >
                   <User size={14} />
-                  Profile &amp; settings
+                  {t.topbar.profileSettings}
                 </Link>
                 <button
                   onClick={() => { logout(); setUserMenuOpen(false) }}
                   className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg text-sm text-red-400 hover:text-red-300 hover:bg-red-900/30 transition-colors"
                 >
                   <LogOut size={14} />
-                  Sign out
+                  {t.topbar.signOut}
                 </button>
               </div>
             </div>

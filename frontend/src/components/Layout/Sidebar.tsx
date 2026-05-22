@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useAuthStore } from '@/store/authStore'
+import { useT } from '@/i18n'
 
 interface SidebarProps {
   collapsed: boolean
@@ -22,23 +23,24 @@ interface SidebarProps {
 
 interface NavItem {
   to: string
-  label: string
+  labelKey: keyof ReturnType<typeof useT>['nav']
   icon: LucideIcon
   adminOnly?: boolean
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { to: '/data', label: 'Data Sources', icon: Database },
-  { to: '/analysis', label: 'Analysis', icon: BarChart2 },
-  { to: '/reports', label: 'Reports', icon: FileText },
-  { to: '/plugins', label: 'Plugins', icon: Plug },
-  { to: '/admin', label: 'Admin', icon: Settings, adminOnly: true },
-  { to: '/profile', label: 'Profile', icon: User },
+  { to: '/dashboard', labelKey: 'dashboard', icon: LayoutDashboard },
+  { to: '/data', labelKey: 'data', icon: Database },
+  { to: '/analysis', labelKey: 'analysis', icon: BarChart2 },
+  { to: '/reports', labelKey: 'reports', icon: FileText },
+  { to: '/plugins', labelKey: 'plugins', icon: Plug },
+  { to: '/admin', labelKey: 'admin', icon: Settings, adminOnly: true },
+  { to: '/profile', labelKey: 'profile', icon: User },
 ]
 
 export function Sidebar({ collapsed, onToggle }: SidebarProps) {
   const user = useAuthStore((s) => s.user)
+  const t = useT()
   const isAdmin = user?.role === 'admin' || user?.role === 'super_admin'
 
   const visibleItems = NAV_ITEMS.filter((item) => !item.adminOnly || isAdmin)
@@ -66,25 +68,28 @@ export function Sidebar({ collapsed, onToggle }: SidebarProps) {
 
       {/* Navigation */}
       <nav className="flex-1 py-4 space-y-0.5 px-2 overflow-y-auto overflow-x-hidden">
-        {visibleItems.map(({ to, label, icon: Icon }) => (
-          <NavLink
-            key={to}
-            to={to}
-            className={({ isActive }) =>
-              cn(
-                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
-                isActive
-                  ? 'bg-blue-600/20 text-blue-400 border border-blue-800/50'
-                  : 'text-gray-400 hover:text-white hover:bg-gray-800 border border-transparent',
-                collapsed && 'justify-center px-0',
-              )
-            }
-            title={collapsed ? label : undefined}
-          >
-            <Icon size={18} className="shrink-0" />
-            {!collapsed && <span className="truncate">{label}</span>}
-          </NavLink>
-        ))}
+        {visibleItems.map(({ to, labelKey, icon: Icon }) => {
+          const label = t.nav[labelKey]
+          return (
+            <NavLink
+              key={to}
+              to={to}
+              className={({ isActive }) =>
+                cn(
+                  'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
+                  isActive
+                    ? 'bg-blue-600/20 text-blue-400 border border-blue-800/50'
+                    : 'text-gray-400 hover:text-white hover:bg-gray-800 border border-transparent',
+                  collapsed && 'justify-center px-0',
+                )
+              }
+              title={collapsed ? label : undefined}
+            >
+              <Icon size={18} className="shrink-0" />
+              {!collapsed && <span className="truncate">{label}</span>}
+            </NavLink>
+          )
+        })}
       </nav>
 
       {/* User info at bottom */}

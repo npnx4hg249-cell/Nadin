@@ -6,9 +6,11 @@ import { DatasetCard } from '@/components/ingest/DatasetCard'
 import { UploadModal } from '@/components/ingest/UploadModal'
 import { Button } from '@/components/ui/Button'
 import { PageSpinner } from '@/components/ui/Spinner'
+import { useT } from '@/i18n'
 
 export function DataPage() {
   const [uploadOpen, setUploadOpen] = useState(false)
+  const t = useT()
 
   const { data, isLoading, refetch, isFetching } = useQuery({
     queryKey: ['datasets'],
@@ -25,11 +27,9 @@ export function DataPage() {
         <div>
           <h1 className="text-xl font-bold text-white flex items-center gap-2">
             <Database size={20} className="text-blue-400" />
-            Data Sources
+            {t.data.title}
           </h1>
-          <p className="text-sm text-gray-400 mt-0.5">
-            Upload and manage your raw data files
-          </p>
+          <p className="text-sm text-gray-400 mt-0.5">{t.data.subtitle}</p>
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -38,14 +38,14 @@ export function DataPage() {
             icon={<RefreshCw size={14} className={isFetching ? 'animate-spin' : ''} />}
             onClick={() => refetch()}
           >
-            Refresh
+            {t.common.refresh}
           </Button>
           <Button
             size="sm"
             icon={<Upload size={14} />}
             onClick={() => setUploadOpen(true)}
           >
-            Upload Dataset
+            {t.data.uploadBtn}
           </Button>
         </div>
       </div>
@@ -55,14 +55,14 @@ export function DataPage() {
         <div className="flex items-center gap-4 px-4 py-3 bg-gray-800/50 rounded-lg border border-gray-700">
           <div className="text-sm text-gray-400">
             <span className="text-white font-semibold">{total}</span>{' '}
-            {total === 1 ? 'dataset' : 'datasets'}
+            {total === 1 ? t.data.dataset : t.data.datasets}
           </div>
           <div className="h-4 w-px bg-gray-700" />
           <div className="text-sm text-gray-400">
             <span className="text-emerald-400 font-semibold">
               {datasets.filter((d) => d.status === 'ready').length}
             </span>{' '}
-            ready
+            {t.data.ready}
           </div>
           {datasets.some((d) => d.status === 'error') && (
             <>
@@ -71,7 +71,7 @@ export function DataPage() {
                 <span className="text-red-400 font-semibold">
                   {datasets.filter((d) => d.status === 'error').length}
                 </span>{' '}
-                failed
+                {t.data.failed}
               </div>
             </>
           )}
@@ -89,13 +89,11 @@ export function DataPage() {
             <Database size={28} className="text-gray-600" />
           </div>
           <div>
-            <h3 className="text-sm font-semibold text-gray-300">No datasets yet</h3>
-            <p className="text-xs text-gray-500 mt-1">
-              Upload a CSV, Excel, JSON or Parquet file to get started
-            </p>
+            <h3 className="text-sm font-semibold text-gray-300">{t.data.noDataTitle}</h3>
+            <p className="text-xs text-gray-500 mt-1">{t.data.noDataSub}</p>
           </div>
           <Button icon={<Upload size={14} />} onClick={() => setUploadOpen(true)}>
-            Upload Dataset
+            {t.data.uploadBtn}
           </Button>
         </div>
       ) : (

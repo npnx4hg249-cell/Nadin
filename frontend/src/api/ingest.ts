@@ -39,12 +39,14 @@ export const ingestApi = {
     name: string,
     description?: string,
     is_public?: boolean,
+    translate_to?: 'en' | 'de',
   ): Promise<Dataset> => {
     const form = new FormData()
     form.append('file', file)
     form.append('name', name)
     if (description) form.append('description', description)
     if (is_public !== undefined) form.append('is_public', String(is_public))
+    if (translate_to) form.append('translate_to', translate_to)
     const { data } = await apiClient.post<Dataset>('/datasets', form, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
