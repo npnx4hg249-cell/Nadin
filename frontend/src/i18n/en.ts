@@ -206,4 +206,8 @@ export const en = {
   },
 } as const
 
-export type Translations = typeof en
+type StringLeaves<T> = {
+  [K in keyof T]: T[K] extends string ? string : StringLeaves<T[K]>
+}
+
+export type Translations = StringLeaves<typeof en>
