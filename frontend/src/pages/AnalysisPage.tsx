@@ -500,6 +500,7 @@ export function AnalysisPage() {
 
   // Results state
   const [result, setResult] = useState<AnalysisResult | null>(null)
+  const [analyzeError, setAnalyzeError] = useState<string | null>(null)
   const [lastSql, setLastSql] = useState<string | undefined>(undefined)
   const [resultTab, setResultTab] = useState<ResultTab>('table')
   const [chartType, setChartType] = useState<ChartType>('bar')
@@ -573,6 +574,7 @@ export function AnalysisPage() {
     },
     onSuccess: (data) => {
       setResult(data)
+      setAnalyzeError(null)
       setResultTab('table')
       setLastSavedInsightId(null)
       const sql = queryMode === 'natural_language' ? generatedSql : queryMode === 'raw_sql' ? rawSql : undefined
@@ -580,7 +582,9 @@ export function AnalysisPage() {
     },
     onError: (err: unknown) => {
       const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
-      toast.error(detail ?? 'Analysis failed')
+      const msg = detail ?? 'Analysis failed — check the query and try again'
+      setAnalyzeError(msg)
+      toast.error(msg)
     },
   })
 
@@ -636,6 +640,7 @@ export function AnalysisPage() {
     setNlStatus('idle')
     setRawSql('')
     setResult(null)
+    setAnalyzeError(null)
     setLastSavedInsightId(null)
   }
 
@@ -829,6 +834,16 @@ export function AnalysisPage() {
           {runMutation.isPending && (
             <div className="flex items-center justify-center flex-1">
               <PageSpinner />
+            </div>
+          )}
+
+          {analyzeError && !runMutation.isPending && (
+            <div className="flex items-start gap-3 rounded-lg border border-red-700/50 bg-red-950/40 p-3 text-sm text-red-300">
+              <AlertCircle size={16} className="mt-0.5 shrink-0 text-red-400" />
+              <div className="min-w-0">
+                <p className="font-medium text-red-200">Query failed</p>
+                <p className="mt-0.5 font-mono text-xs break-all">{analyzeError}</p>
+              </div>
             </div>
           )}
 
