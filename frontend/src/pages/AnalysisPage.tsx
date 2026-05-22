@@ -38,6 +38,7 @@ import {
   ResponsiveContainer,
 } from 'recharts'
 import { useT } from '@/i18n'
+import apiClient from '@/api/client'
 import { ingestApi } from '@/api/ingest'
 import { analysisApi } from '@/api/analysis'
 import { outputApi } from '@/api/output'
@@ -564,12 +565,10 @@ export function AnalysisPage() {
       }
       // NL or Raw SQL — both send raw SQL via engine query endpoint
       const sql = queryMode === 'natural_language' ? generatedSql : rawSql
-      const { data } = await import('@/api/client').then(({ default: apiClient }) =>
-        apiClient.post<AnalysisResult>('/engine/query', {
-          dataset_id: selectedDatasetId,
-          sql,
-        }),
-      )
+      const { data } = await apiClient.post<AnalysisResult>('/engine/query', {
+        dataset_id: selectedDatasetId,
+        sql,
+      })
       return data
     },
     onSuccess: (data) => {
@@ -581,10 +580,20 @@ export function AnalysisPage() {
       setLastSql(sql)
     },
     onError: (err: unknown) => {
-      const detail = (err as { response?: { data?: { detail?: string } } })?.response?.data?.detail
-      const msg = detail ?? 'Analysis failed — check the query and try again'
+      // detail can be a string (normal errors) or an array (Pydantic 422)
+      const raw = (err as { response?: { data?: { detail?: unknown } } })?.response?.data?.detail
+      let msg: string
+      if (typeof raw === 'string' && raw) {
+        msg = raw
+      } else if (Array.isArray(raw) && raw.length > 0) {
+        msg = (raw as { msg?: string }[]).map((e) => e.msg ?? JSON.stringify(e)).join('; ')
+      } else {
+        msg = 'Analysis failed — check the query and try again'
+      }
       setAnalyzeError(msg)
-      toast.error(msg)
+      // Don't double-toast if the interceptor already showed a server error
+      const status = (err as { response?: { status?: number } })?.response?.status
+      if (!status || status < 500) toast.error(msg, { duration: 6000 })
     },
   })
 

@@ -42,13 +42,19 @@ def _run_query(parquet_path: str, sql: str, limit: int = 1000) -> QueryResult:
 
     con = duckdb.connect(":memory:")
     try:
-        con.execute(f"CREATE VIEW dataset AS SELECT * FROM read_parquet('{parquet_path}')")
-        # Wrap in a subquery with LIMIT so unbounded queries don't OOM
-        safe_sql = f"SELECT * FROM ({sql}) __q LIMIT {limit + 1}"
+        try:
+            con.execute(
+                f"CREATE VIEW dataset AS SELECT * FROM read_parquet('{parquet_path}')"
+            )
+        except duckdb.Error as exc:
+            raise ValueError(f"Cannot read dataset file: {exc}") from exc
+
+        safe_sql = f"SELECT * FROM ({sql}) _q LIMIT {limit + 1}"
         try:
             rel = con.execute(safe_sql)
         except duckdb.Error as exc:
             raise ValueError(str(exc)) from exc
+
         columns = [desc[0] for desc in rel.description]
         raw_rows = rel.fetchall()
         truncated = len(raw_rows) > limit
