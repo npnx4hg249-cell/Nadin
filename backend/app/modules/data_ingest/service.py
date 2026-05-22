@@ -82,9 +82,9 @@ async def _translate_dataframe(df, target_lang: str):
     df = df.rename(dict(zip(original_cols, safe_cols)))
 
     # 2. Translate unique string values per String column
-    string_dtypes = {pl.Utf8, pl.String}
+    # pl.Utf8 is an alias removed in newer Polars — use pl.String only
     for col in df.columns:
-        if df[col].dtype not in string_dtypes:
+        if df[col].dtype != pl.String:
             continue
         unique_vals = df[col].drop_nulls().unique().to_list()
         if not unique_vals:
@@ -95,9 +95,16 @@ async def _translate_dataframe(df, target_lang: str):
             batch = unique_vals[i : i + TRANSLATE_BATCH_SIZE]
             translated_batch = await translate_batch(batch, target_lang)
             translated_map.update(zip(batch, translated_batch))
-        df = df.with_columns(
-            pl.col(col).replace(translated_map).alias(col)
-        )
+        if translated_map:
+            # dict-based replace was removed in Polars 0.20; use old=/new= kwargs
+            df = df.with_columns(
+                pl.col(col)
+                .replace(
+                    old=list(translated_map.keys()),
+                    new=list(translated_map.values()),
+                )
+                .alias(col)
+            )
 
     return df
 
